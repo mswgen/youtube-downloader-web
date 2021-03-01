@@ -13,8 +13,8 @@
         width: 90%;
         grid-template-areas:
         "header header header"
-        "img . info"
-        ". . menu2";
+        "img      .    info"
+        ". . .";
         row-gap: 15px;
         column-gap: 25px;
       }
@@ -97,6 +97,15 @@
             <span class="alert-danger"><%= video.dislike %> Dislikes</span>
           </p>
           <p><%= video.date %></p>
+        </div><br>
+
+        <div class="menu">
+          <% for (let i in videoArr) { %>
+            <p class="h5"><%= videoArr[i].quality %>, <%= videoArr[i].fps %>fps</p>
+            <p class="h6"><%= Math.floor(((Number(videoArr[i].asdf)) / 1024) / 1024) %> mb</p>
+            <p class="lead"><%= videoArr[i].container %></p>
+            <a href="videoArr[i].url" class=""></a>
+          <% } %>
         </div>
     </div>
 

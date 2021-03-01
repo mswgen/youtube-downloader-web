@@ -82,6 +82,7 @@ function createCB(type, arr, info) {
           fps: format.fps,
           quality: format.qualityLabel,
           container: format.container,
+          asdf: format.bitrate
         })
       }
     }
