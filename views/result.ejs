@@ -14,7 +14,7 @@
         grid-template-areas:
         "header header header"
         "img . info"
-        ". menu1 menu2";
+        ". . menu2";
         row-gap: 15px;
         column-gap: 25px;
       }
@@ -23,14 +23,28 @@
         grid-area: "header";
       }
 
-      .thumbnail {
+      .iframe {
         grid-area: "img";
+      }
+
+      .thumbnail-img {
+        width: 560;
+        height: 315;
+      }
+
+      .blur {
+        filter: blur(15px);
       }
 
       .info {
         grid-area: "info";
+        width: 500px;
       }
 
+      .description {
+        overflow: auto;
+        height: 90px;
+      }
     </style>
 </head>
 <body>
@@ -63,14 +77,21 @@
                 </div>
               </nav>
         </header>
-        <figure class="thumbnail figure">
-            <img src="<%= video.thumbnail %>" alt="thumbnail-img" class="figure-img img-fluid rounded">
-        </figure>
+        <div class="iframe">
+          <% if (video.isNsfw) { %>
+            <img src="<%= video.thumbnail %>" class="thumbnail-img blur">
+          <% } else { %>
+            <iframe width="560" height="315" src="<%= video.iframe %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <% } %>
+        </div>
         
         <div class="info">
           <p class="h4"><%= video.title %></p>
           <footer class="blockquote-footer"><%= author.name %></footer><br>
-          <p class="overflow-auto"><%= video.description %></p>
+          <p class="description">설명<br><%= video.description %></p>
+          <% if (video.isNsfw) { %>
+            <span class="alert-danger">연령제한이 적용된 동영상입니다</span>
+          <% } %>
           <p>
             <span class="alert-primary"><%= video.like %> Likes,</span>
             <span class="alert-danger"><%= video.dislike %> Dislikes</span>
@@ -78,5 +99,26 @@
           <p><%= video.date %></p>
         </div>
     </div>
+
+    <script>
+      <% if (video.isNsfw) { %>
+        document.querySelector('div.iframe > img').addEventListener(
+          'click',
+          () => {
+            if (document.querySelector('div.iframe > img')
+            .classList
+            .contains('blur')) {
+              document.querySelector('div.iframe > img')
+              .classList
+              .remove('blur')
+            } else {
+              document.querySelector('div.iframe > img')
+              .classList
+              .add('blur')
+            }
+          }
+        )
+      <% } %>
+    </script>
 </body>
 </html>

@@ -35,18 +35,18 @@ app.get('/process', async (req, res) => {
     info.formats.map(createCB('video', videoArr, info));
     info.formats.map(createCB('audio', audioArr, info));
 
-    
-
     res.render('result', {
       videoArr,
       audioArr,
       video: {
         thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
         title: info.videoDetails.title,
-        description: info.videoDetails.description,
+        description: info.videoDetails.description.slice(0, 250),
         date: info.videoDetails.publishDate,
         like: info.videoDetails.likes,
         dislike: info.videoDetails.dislikes,
+        isNsfw: info.videoDetails.age_restricted,
+        iframe: info.videoDetails.embed.iframeUrl
       },
       author: {
         name: info.videoDetails.author.name
