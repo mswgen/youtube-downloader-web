@@ -35,10 +35,22 @@ app.get('/process', async (req, res) => {
     info.formats.map(createCB('video', videoArr, info));
     info.formats.map(createCB('audio', audioArr, info));
 
+    
+
     res.render('result', {
       videoArr,
       audioArr,
-      thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
+      video: {
+        thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
+        title: info.videoDetails.title,
+        description: info.videoDetails.description,
+        date: info.videoDetails.publishDate,
+        like: info.videoDetails.likes,
+        dislike: info.videoDetails.dislikes,
+      },
+      author: {
+        name: info.videoDetails.author.name
+      }
     });
   });
 });
