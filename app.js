@@ -2,6 +2,7 @@
 const express = require('express');
 const ytdl = require('ytdl-core');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 // Variables
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ const app = express();
 // Middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
@@ -31,27 +33,38 @@ app.get('/process', async (req, res) => {
   if (url == false)
     return res.send(`<script>alert("유효하지 않은 url입니다");location.href='/';</script>`);
 
+  
   ytdl.getInfo(url).then(info => {
-    info.formats.map(createCB('video', videoArr, info));
-    info.formats.map(createCB('audio', audioArr, info));
-
-    res.render('result', {
-      videoArr,
-      audioArr,
-      video: {
-        thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
+    ytdl(url, {format: "mp3"})
+    .pipe(fs.createWriteStream(`${__dirname}/public/audio/${info.videoDetails.title}.mp3`))
+    .on("finish", () => {
+      audioArr.push({
         title: info.videoDetails.title,
-        description: info.videoDetails.description.slice(0, 250),
-        date: info.videoDetails.publishDate,
-        like: info.videoDetails.likes,
-        dislike: info.videoDetails.dislikes,
-        isNsfw: info.videoDetails.age_restricted,
-        iframe: info.videoDetails.embed.iframeUrl
-      },
-      author: {
-        name: info.videoDetails.author.name
-      }
-    });
+        url: `${audio}/${info.videoDetails.title}`,
+        quality: `Standard`,
+        container: `mp3`,
+      });
+      info.formats.map(createCB('video', videoArr, info));
+      info.formats.map(createCB('audio', audioArr, info));
+
+      res.render('result', {
+        videoArr,
+        audioArr,
+        video: {
+          thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
+          title: info.videoDetails.title,
+          description: info.videoDetails.description.slice(0, 250),
+          date: info.videoDetails.publishDate,
+          like: info.videoDetails.likes,
+          dislike: info.videoDetails.dislikes,
+          isNsfw: info.videoDetails.age_restricted,
+          iframe: info.videoDetails.embed.iframeUrl
+        },
+        author: {
+          name: info.videoDetails.author.name
+        }
+      });
+    })
   });
 });
 
@@ -75,7 +88,7 @@ function createCB(type, arr, info) {
      */
     format => {
       if (arr.length > 5)  return;
-      if (format.hasVideo && !format.hasAudio) {
+      if (format.hasVideo && format.hasAudio) {
         arr.push({
           title: info.videoDetails.title,
           url: format.url,
@@ -94,12 +107,12 @@ function createCB(type, arr, info) {
      */
     format => {
       if (arr.length > 5)  return;
-      if (!format.videoCodec && format.hasAudio) {
+      if (!format.hasVideo && format.hasAudio) {
         arr.push({
           title: info.videoDetails.title,
           url: format.url,
-          quality: format.audioBitrate,
-          container: format.container,
+          quality: `${format.audioBitrate} Kbps`,
+          container: `${format.container == 'mp4' ?  `m4a` : `${format.container}`}`,
         });
       }
     }

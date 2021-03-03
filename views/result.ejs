@@ -18,6 +18,9 @@
         row-gap: 15px;
         column-gap: 25px;
       }
+      .table-container {
+        width: 90%;
+      }
 
       header {
         grid-area: "header";
@@ -97,16 +100,59 @@
             <span class="alert-danger"><%= video.dislike %> Dislikes</span>
           </p>
           <p><%= video.date %></p>
-        </div><br>
-
-        <div class="menu">
-          <% for (let i in videoArr) { %>
-            <p class="h5"><%= videoArr[i].quality %>, <%= videoArr[i].fps %>fps</p>
-            <p class="h6"><%= Math.floor(((Number(videoArr[i].asdf)) / 1024) / 1024) %> mb</p>
-            <p class="lead"><%= videoArr[i].container %></p>
-            <a href="videoArr[i].url" class=""></a>
-          <% } %>
-        </div>
+        </div><br><br>
+        <table class="table video-table">
+          <thead>
+            <tr>
+              <th scope="col">Format</th>
+              <th scope="col">Quality</th>
+              <th scope="col">Url</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i in [1, 2, 3, 4, 5]) { %>
+              <% if (videoArr[i]) { %> 
+                <tr>
+                  <td class="lead"><%= videoArr[i].container %></td>
+                  <td><%= videoArr[i].quality %>, <%= videoArr[i].fps %>fps</td>
+                  <td><a href="<%= videoArr[i].url %>" target="_blank">Url</a></td>
+                </tr>
+              <% } else { %>
+                <tr>
+                  <td class="lead">&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <% } %>
+            <% } %>
+          </tbody>
+        </table>
+        <table class="table audio-table">
+          <thead>
+            <tr>
+              <th scope="col">Format</th>
+              <th scope="col">Quality</th>
+              <th scope="col">Url</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i in [1, 2, 3, 4, 5]) { %>
+              <% if (audioArr[i]) { %> 
+                <tr>
+                  <td class="lead"><%= audioArr[i].container %></td>
+                  <td><%= audioArr[i].quality %></td>
+                  <td><a href="<%= audioArr[i].url %>" target="_blank">Url</a></td>
+                </tr>
+              <% } else { %>
+                <tr>
+                  <td class="lead">&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <% } %>
+            <% } %>
+          </tbody>
+        </table>
     </div>
 
     <script>
