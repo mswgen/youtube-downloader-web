@@ -35,14 +35,14 @@ app.get('/process', async (req, res) => {
 
   
   ytdl.getInfo(url).then(info => {
-    ytdl(url, {format: "mp3"})
-    .pipe(fs.createWriteStream(`${__dirname}/public/audio/${info.videoDetails.title}.mp3`))
+    ytdl(url, {filter: 'audioonly'})
+    .pipe(fs.createWriteStream(`${__dirname}/public/audio/${info.videoDetails.title}.wav`))
     .on("finish", () => {
       audioArr.push({
         title: info.videoDetails.title,
-        url: `${audio}/${info.videoDetails.title}`,
-        quality: `Standard`,
-        container: `mp3`,
+        url: `${"audio"}/${info.videoDetails.title}.wav`,
+        quality: `wav default`,
+        container: `wav`,
       });
       info.formats.map(createCB('video', videoArr, info));
       info.formats.map(createCB('audio', audioArr, info));
