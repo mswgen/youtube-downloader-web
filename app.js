@@ -3,9 +3,11 @@ const express = require('express');
 const ytdl = require('ytdl-core');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const http = require('http');
+const chalk = require('chalk');
 
 // Variables
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // App
 const app = express();
@@ -35,9 +37,8 @@ app.get('/process', async (req, res) => {
 
   
   ytdl.getInfo(url).then(info => {
-    ytdl(url, {filter: 'audioonly'})
-    .pipe(fs.createWriteStream(`${__dirname}/public/audio/${info.videoDetails.title}.wav`))
-    .on("finish", () => {
+    try {
+      fs.readFileSync(`${__dirname}/public/audio/${info.videoDetails.title}.wav`);
       audioArr.push({
         title: info.videoDetails.title,
         url: `${"audio"}/${info.videoDetails.title}.wav`,
@@ -53,26 +54,58 @@ app.get('/process', async (req, res) => {
         video: {
           thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
           title: info.videoDetails.title,
-          description: info.videoDetails.description.slice(0, 250),
+          description: info.videoDetails.description,
           date: info.videoDetails.publishDate,
           like: info.videoDetails.likes,
           dislike: info.videoDetails.dislikes,
           isNsfw: info.videoDetails.age_restricted,
-          iframe: info.videoDetails.embed.iframeUrl
+          iframe: info.videoDetails.embed.iframeUrl,
+          views: `${info.videoDetails.viewCount}`
         },
         author: {
           name: info.videoDetails.author.name
         }
       });
-    })
+    } catch (e) {
+      ytdl(url, {filter: 'audioonly'})
+      .pipe(fs.createWriteStream(`${__dirname}/public/audio/${info.videoDetails.title}.wav`))
+      .on("finish", () => {
+        audioArr.push({
+          title: info.videoDetails.title,
+          url: `${"audio"}/${info.videoDetails.title}.wav`,
+          quality: `wav default`,
+          container: `wav`,
+        });
+        info.formats.map(createCB('video', videoArr, info));
+        info.formats.map(createCB('audio', audioArr, info));
+
+        res.render('result', {
+          videoArr,
+          audioArr,
+          video: {
+            thumbnail: `https://i.ytimg.com/vi/${url}/hqdefault.jpg`,
+            title: info.videoDetails.title,
+            description: info.videoDetails.description.slice(0, 250),
+            date: info.videoDetails.publishDate,
+            like: info.videoDetails.likes,
+            dislike: info.videoDetails.dislikes,
+            isNsfw: info.videoDetails.age_restricted,
+            iframe: info.videoDetails.embed.iframeUrl,
+            views: `${info.videoDetails.viewCount}`
+          },
+          author: {
+            name: info.videoDetails.author.name
+          }
+        });
+      })
+    }
   });
 });
 
 
-
-app.listen(PORT, () => {
-  console.log(`Listening on Port ${PORT}`);
-})
+http.createServer(app).listen(PORT, () => {
+  console.log(`Listening on Port ${PORT}, HTTP 1.1`);
+});
 
 function youtube_parser(url){
   var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;

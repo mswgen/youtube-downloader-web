@@ -46,7 +46,7 @@
 
       .description {
         overflow: auto;
-        height: 90px;
+        height: 100px;
       }
     </style>
 </head>
@@ -68,8 +68,8 @@
                         Github
                       </a>
                       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="https://github.com/sujang958">Developer</a>
-                        <a class="dropdown-item" href="https://github.com/team-int/youtube-downloader">Repo</a>
+                        <a class="dropdown-item" href="https://github.com/sujang958" target="_blank">Developer</a>
+                        <a class="dropdown-item" href="https://github.com/team-int/youtube-downloader" target="_blank">Repo</a>
                       </div>
                     </li>
                   </ul>
@@ -96,6 +96,7 @@
             <span class="alert-danger">연령제한이 적용된 동영상입니다</span>
           <% } %>
           <p>
+            <p class="lead"><%= video.views %> views</p>
             <span class="alert-primary"><%= video.like %> Likes,</span>
             <span class="alert-danger"><%= video.dislike %> Dislikes</span>
           </p>
